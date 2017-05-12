@@ -114,59 +114,54 @@ public class FileConsumer {
      */
     public void consume() throws FileServerConnectorException {
         if (log.isDebugEnabled()) {
-            log.debug("Polling for file : " +
-                    FileTransportUtils.maskURLPassword(fileURI));
+            log.debug("Polling for file : " + FileTransportUtils.maskURLPassword(fileURI));
         }
 
         // If file/folder found proceed to the processing stage
-            boolean isFileExists;
+        boolean isFileExists;
+        try {
+            isFileExists = fileObject.exists();
+        } catch (FileSystemException e) {
+            throw new FileServerConnectorException("Error occurred when determining whether the file at URI : " +
+                                                   FileTransportUtils.maskURLPassword(fileURI) + " exists. " + e);
+        }
+
+        boolean isFileReadable;
+        try {
+            isFileReadable = fileObject.isReadable();
+        } catch (FileSystemException e) {
+            throw new FileServerConnectorException("Error occurred when determining whether the file at URI : " +
+                                                   FileTransportUtils.maskURLPassword(fileURI) + " is readable. " + e);
+        }
+
+        if (isFileExists && isFileReadable) {
+            FileType fileType;
             try {
-                isFileExists = fileObject.exists();
+                fileType = fileObject.getType();
             } catch (FileSystemException e) {
-                throw new FileServerConnectorException("Error occurred when determining whether the file at URI : "
-                        + FileTransportUtils.maskURLPassword(fileURI) + " exists. " + e);
+                throw new FileServerConnectorException(
+                        "Error occurred when determining whether file: " + FileTransportUtils.maskURLPassword(fileURI) +
+                        " is a file or a folder", e);
             }
 
-            boolean isFileReadable;
-            try {
-                isFileReadable = fileObject.isReadable();
-            } catch (FileSystemException e) {
-                throw new FileServerConnectorException("Error occurred when determining whether the file at URI : "
-                        + FileTransportUtils.maskURLPassword(fileURI) + " is readable. " + e);
-            }
-
-            if (isFileExists && isFileReadable) {
-                FileType fileType;
-                try {
-                    fileType = fileObject.getType();
-                } catch (FileSystemException e) {
-                    throw new FileServerConnectorException("Error occurred when determining whether file: "
-                            + FileTransportUtils.maskURLPassword(fileURI) + " is a file or a folder", e);
-                }
-
-                if (fileType == FileType.FILE) {
-                    processFile(fileObject);
-                } else {
-                    throw new FileServerConnectorException("File: "
-                            + FileTransportUtils.maskURLPassword(fileURI) + " is not a file " +
-                                       (fileType == null ? "" : ". Found file type: " + fileType.toString()));
-                }
+            if (fileType == FileType.FILE) {
+                processFile(fileObject);
             } else {
-                throw new FileServerConnectorException("Unable to access or read file or directory : "
-                        + FileTransportUtils.maskURLPassword(fileURI)
-                        + ". Reason: "
-                        + (isFileExists ? (isFileReadable ? "Unknown reason"
-                        : "The file can not be read!") : "The file does not exist!"));
+                throw new FileServerConnectorException(
+                        "Unable to access or read file or directory : " + FileTransportUtils.maskURLPassword(fileURI) +
+                        ". Reason: " +
+                        (isFileExists ? (isFileReadable ? "Unknown reason" : "The file can not be read!") :
+                         "The file does not exist!"));
             }
-
-        if (log.isDebugEnabled()) {
-            log.debug("End : Scanning directory or file : " + FileTransportUtils.maskURLPassword(fileURI));
+            if (log.isDebugEnabled()) {
+                log.debug("End : Scanning directory or file : " + FileTransportUtils.maskURLPassword(fileURI));
+            }
         }
     }
 
 
     /**
-     * Setup the required transport parameters
+     * Setup the required transport parameters.
      */
     private void setupParams() throws ServerConnectorException {
         fileURI = fileProperties.get(Constants.TRANSPORT_FILE_FILE_URI);
@@ -207,7 +202,7 @@ public class FileConsumer {
     }
 
     /**
-     * Actual processing of the file/folder
+     * Actual processing of the file/folder.
      *
      * @param file
      * @return

@@ -16,13 +16,13 @@
  * under the License.
  */
 
-package org.wso2.carbon.transport.file.connector.server.util;
+package org.wso2.carbon.transport.filesystem.connector.server.util;
 
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.util.DelegatingFileSystemOptionsBuilder;
-import org.wso2.carbon.transport.file.connector.server.exception.FileServerConnectorException;
+import org.wso2.carbon.transport.filesystem.connector.server.exception.FileSystemServerConnectorException;
 
 import java.util.Iterator;
 import java.util.Locale;
@@ -39,7 +39,7 @@ public class FileTransportUtils {
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(":(?:[^/]+)@");
 
     public static FileSystemOptions attachFileSystemOptions(
-            Map<String, String> options, FileSystemManager fsManager) throws FileServerConnectorException {
+            Map<String, String> options, FileSystemManager fsManager) throws FileSystemServerConnectorException {
         if (options == null) {
             return null;    //returning null as this is not an errorneous case.
         }
@@ -60,7 +60,7 @@ public class FileTransportUtils {
                             delegate.setConfigString(opts, Constants.SCHEME_SFTP,
                                     entry.getKey().toLowerCase(Locale.US), entry.getValue());
                         } catch (FileSystemException e) {
-                            throw new FileServerConnectorException(
+                            throw new FileSystemServerConnectorException(
                                     "Failed to set file transport configuration for scheme: "
                                             + Constants.SCHEME_SFTP + " and option: " + option.toString(), e);
                         }
@@ -73,8 +73,9 @@ public class FileTransportUtils {
                 delegate.setConfigString(opts, options.get(Constants.SCHEME),
                         Constants.FILE_TYPE, String.valueOf(getFileType(options.get(Constants.FILE_TYPE))));
             } catch (FileSystemException e) {
-                throw new FileServerConnectorException("Failed to set file transport configuration for scheme: "
-                                + options.get(Constants.SCHEME) + " and option: " + Constants.FILE_TYPE, e);
+                throw new FileSystemServerConnectorException("Failed to set file transport configuration for scheme: "
+                                                             + options.get(Constants.SCHEME) + " and option: "
+                                                             + Constants.FILE_TYPE, e);
             }
         }
         return opts;

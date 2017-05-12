@@ -20,8 +20,7 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
-<parent>
+    <parent>
         <groupId>org.wso2.carbon.transport</groupId>
         <artifactId>org.wso2.carbon.transport.file.parent</artifactId>
         <version>4.3.1-SNAPSHOT</version>
@@ -29,10 +28,10 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.transport.file</artifactId>
+    <artifactId>org.wso2.carbon.transport.file-system</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon Transport File Component</name>
-    <description>Carbon File Transport</description>
+    <name>WSO2 Carbon Transport File System Component</name>
+    <description>Carbon File System Transport</description>
 
     <dependencies>
         <dependency>
@@ -67,7 +66,7 @@
     </dependencies>
     <properties>
         <export.package>
-            org.wso2.carbon.transport.file.*;version="${file.transport.package.export.version}"
+            org.wso2.carbon.transport.filesystem.*;version="${file.transport.package.export.version}"
         </export.package>
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.import.version.range}",
@@ -78,5 +77,6 @@
             org.apache.commons.vfs2.*;version="${commons-vfs2.wso2.version.range}"
         </import.package>
     </properties>
+
 
 </project>

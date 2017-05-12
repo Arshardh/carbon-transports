@@ -16,25 +16,25 @@
  * under the License.
  */
 
-package org.wso2.carbon.transport.file.connector.server;
+package org.wso2.carbon.transport.filesystem.connector.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
-import org.wso2.carbon.transport.file.connector.server.exception.FileServerConnectorException;
-import org.wso2.carbon.transport.file.connector.server.util.FileTransportUtils;
+import org.wso2.carbon.transport.filesystem.connector.server.exception.FileSystemServerConnectorException;
+import org.wso2.carbon.transport.filesystem.connector.server.util.FileTransportUtils;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
- * This {@link CarbonCallback} will be called by a message processsor to acknowledge that
+ * This {@link CarbonCallback} will be called by a message processor to acknowledge that
  * it has finished processing the file input stream, so it may be closed from the transport end.
  */
-public class FileServerConnectorCallback implements CarbonCallback {
+public class FileSystemServerConnectorCallback implements CarbonCallback {
 
-    private static final Logger log = LoggerFactory.getLogger(FileServerConnectorCallback.class);
+    private static final Logger log = LoggerFactory.getLogger(FileSystemServerConnectorCallback.class);
     /**
      * Countdown latch to wait for the acknowledgement from the application layer.
      */
@@ -55,11 +55,11 @@ public class FileServerConnectorCallback implements CarbonCallback {
      * @param deleteIfNotAck  If the message processor did not acknowledge, whether to delete the file or not.
      * @param fileURI         The URI of the file which is being processed.
      * @throws InterruptedException If this thread was interrupted while waiting for the acknowledgement.
-     * @throws FileServerConnectorException If deleteIfNotAcknowledged parameter is set to false,
+     * @throws FileSystemServerConnectorException If deleteIfNotAcknowledged parameter is set to false,
      *  and acknowledgement was not received.
      */
     protected void waitTillDone(long timeOutInterval, boolean deleteIfNotAck, String fileURI)
-            throws InterruptedException, FileServerConnectorException {
+            throws InterruptedException, FileSystemServerConnectorException {
         boolean isCallbackReceived = latch.await(timeOutInterval, TimeUnit.MILLISECONDS);
 
         if (!isCallbackReceived) {
@@ -67,9 +67,10 @@ public class FileServerConnectorCallback implements CarbonCallback {
                 log.warn("The time for waiting for the acknowledgement exceeded " + timeOutInterval + "ms. Proceeding "
                         + "to deleting the file: " + FileTransportUtils.maskURLPassword(fileURI));
             } else {
-                throw new FileServerConnectorException("Message processor did not acknowledge. " +
-                        "Wait timed out  after  " + timeOutInterval + "ms. Aborting processing of file: " +
-                        FileTransportUtils.maskURLPassword(fileURI));
+                throw new FileSystemServerConnectorException("Message processor did not acknowledge. " +
+                                                             "Wait timed out  after  " + timeOutInterval +
+                                                             "ms. Aborting processing of file: " +
+                                                             FileTransportUtils.maskURLPassword(fileURI));
             }
         }
     }
